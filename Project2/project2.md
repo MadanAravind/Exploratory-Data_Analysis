@@ -1,5 +1,8 @@
-Exploratory Data Analysis Project 2 (JHU) Coursera
+# Exploratory Data Analysis Project 2 (JHU) Coursera
+
 Unzipping and Loading Files
+----------
+```R
 library("data.table")
 path <- getwd()
 download.file(url = "https://d396qusza40orc.cloudfront.net/exdata%2Fdata%2FNEI_data.zip"
@@ -8,8 +11,14 @@ unzip(zipfile = "dataFiles.zip")
 
 SCC <- data.table::as.data.table(x = readRDS(file = "Source_Classification_Code.rds"))
 NEI <- data.table::as.data.table(x = readRDS(file = "summarySCC_PM25.rds"))
-Question 1 (Plot1.R)
-Have total emissions from PM2.5 decreased in the United States from 1999 to 2008? Using the base plotting system, make a plot showing the total PM2.5 emission from all sources for each of the years 1999, 2002, 2005, and 2008.
+```
+
+Question 1 ([plot1.R](https://github.com/MadanAravind/Exploratory-Data_Analysis/blob/master/Project2/Plot1.R))
+----------
+Have total emissions from PM2.5 decreased in the United States from 1999 to 2008? 
+Using the base plotting system, make a plot showing the total PM2.5 emission from all sources for each of the years 1999, 2002, 2005, and 2008.
+
+```R
 # Prevents histogram from printing in scientific notation
 NEI[, Emissions := lapply(.SD, as.numeric), .SDcols = c("Emissions")]
 
@@ -23,9 +32,15 @@ barplot(totalNEI[, Emissions]
         , main = "Emissions over the Years")
         
 dev.off()
- 
-Question 2 (Plot2.R)
+```
+
+<img src="https://github.com/MadanAravind/Exploratory-Data_Analysis/blob/master/Project2/Plot1.png" alt="Exploratory Data Analysis Project 2 question 1" >
+
+Question 2 ([plot2.R](https://github.com/MadanAravind/Exploratory-Data_Analysis/blob/master/Project2/Plot2.R))
+----------
 Have total emissions from PM2.5 decreased in the Baltimore City, Maryland (𝚏𝚒𝚙𝚜 == "𝟸𝟺𝟻𝟷𝟶") from 1999 to 2008? Use the base plotting system to make a plot answering this question.
+
+```R
 NEI[, Emissions := lapply(.SD, as.numeric), .SDcols = c("Emissions")]
 totalNEI <- NEI[fips=='24510', lapply(.SD, sum, na.rm = TRUE)
                 , .SDcols = c("Emissions")
@@ -39,9 +54,15 @@ barplot(totalNEI[, Emissions]
         , main = "Emissions over the Years")
 
 dev.off()
- 
-Question 3 (Plot3.R)
-Of the four types of sources indicated by the 𝚝𝚢𝚙𝚎 (point, nonpoint, onroad, nonroad) variable, which of these four sources have seen decreases in emissions from 1999–2008 for Baltimore City? Which have seen increases in emissions from 1999–2008? Use the ggplot2 plotting system to make a plot answer this question.
+```
+<img src="https://github.com/MadanAravind/Exploratory-Data_Analysis/blob/master/Project2/plot2.png" alt="Exploratory Data Analysis Project 2 question 2" >
+
+Question 3 ([plot3.R](https://github.com/MadanAravind/Exploratory-Data_Analysis/blob/master/Project2/Plot3.R))
+----------
+Of the four types of sources indicated by the 𝚝𝚢𝚙𝚎 (point, nonpoint, onroad, nonroad) variable, which of these four sources have seen decreases in emissions from 1999–2008 for Baltimore City? 
+Which have seen increases in emissions from 1999–2008? Use the ggplot2 plotting system to make a plot answer this question.
+
+```R
 # Subset NEI data by Baltimore
 baltimoreNEI <- NEI[fips=="24510",]
 
@@ -54,9 +75,15 @@ ggplot(baltimoreNEI,aes(factor(year),Emissions,fill=type)) +
   labs(title=expression("PM"[2.5]*" Emissions, Baltimore City 1999-2008 by Source Type"))
 
 dev.off()
- 
-Question 4 (Plot4.R)
+```
+
+<img src="https://github.com/MadanAravind/Exploratory-Data_Analysis/blob/master/Project2/plot3.png" alt="Exploratory Data Analysis Project 2 question 3" >
+
+Question 4 ([plot4.R](https://github.com/MadanAravind/Exploratory-Data_Analysis/blob/master/Project2/Plot4.R))
+----------
 Across the United States, how have emissions from coal combustion-related sources changed from 1999–2008?
+
+```R
 # Subset coal combustion related NEI data
 combustionRelated <- grepl("comb", SCC[, SCC.Level.One], ignore.case=TRUE)
 coalRelated <- grepl("coal", SCC[, SCC.Level.Four], ignore.case=TRUE) 
@@ -71,9 +98,15 @@ ggplot(combustionNEI,aes(x = factor(year),y = Emissions/10^5)) +
   labs(title=expression("PM"[2.5]*" Coal Combustion Source Emissions Across US from 1999-2008"))
 
 dev.off()
- 
-Question 5 (Plot5.R)
+```
+
+<img src="https://github.com/MadanAravind/Exploratory-Data_Analysis/blob/master/Project2/plot4.png" alt="Exploratory Data Analysis Project 2 question 4" >
+
+Question 5 ([plot5.R](https://github.com/MadanAravind/Exploratory-Data_Analysis/blob/master/Project2/Plot5.R))
+----------
 How have emissions from motor vehicle sources changed from 1999–2008 in Baltimore City?
+
+```R
 # Gather the subset of the NEI data which corresponds to vehicles
 condition <- grepl("vehicle", SCC[, SCC.Level.Two], ignore.case=TRUE)
 vehiclesSCC <- SCC[condition, SCC]
@@ -90,9 +123,15 @@ ggplot(baltimoreVehiclesNEI,aes(factor(year),Emissions)) +
   labs(title=expression("PM"[2.5]*" Motor Vehicle Source Emissions in Baltimore from 1999-2008"))
 
 dev.off()
- 
-Question 6 (Plot6.R)
+```
+
+<img src="https://github.com/MadanAravind/Exploratory-Data_Analysis/blob/master/Project2/plot5.png" alt="Exploratory Data Analysis Project 2 question 5" >
+
+Question 6 ([plot6.R](https://github.com/MadanAravind/Exploratory-Data_Analysis/blob/master/Project2/Plot6.R))
+----------
 Compare emissions from motor vehicle sources in Baltimore City with emissions from motor vehicle sources in Los Angeles County, California (𝚏𝚒𝚙𝚜 == "𝟶𝟼𝟶𝟹𝟽"). Which city has seen greater changes over time in motor vehicle emissions?
+
+```R
 # Gather the subset of the NEI data which corresponds to vehicles
 condition <- grepl("vehicle", SCC[, SCC.Level.Two], ignore.case=TRUE)
 vehiclesSCC <- SCC[condition, SCC]
@@ -117,5 +156,6 @@ ggplot(bothNEI, aes(x=factor(year), y=Emissions, fill=city)) +
   labs(title=expression("PM"[2.5]*" Motor Vehicle Source Emissions in Baltimore & LA, 1999-2008"))
 
 dev.off()
- 
+```
 
+<img src="https://github.com/MadanAravind/Exploratory-Data_Analysis/blob/master/Project2/plot6.png" alt="Exploratory Data Analysis Project 2 question 6" >
